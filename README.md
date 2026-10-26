@@ -1,11 +1,22 @@
-<div align="center">
+# Heartbeat Timer — Invisible Stopwatch
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+A minimal, distraction-free stopwatch that displays a single physical or tech challenge while timing invisibly on a pure black screen.
 
-  <h1>Built with AI Studio</h2>
+## ✨ Features
+- **Pure Black UI (`#000000`)**: Zero distractions, no running timer digits, no progress bars.
+- **70 Fun Activities**: Physical fitness, robot dances, singing drills, funny acting, and tech-themed challenges.
+- **One Fixed Activity Per Session**: Stays steady for the entire session.
+- **Large Circular Buttons**: Seamless touch and keyboard navigation with START, STOP, and TRY AGAIN.
+- **Monotonic Accuracy**: Accurate duration measurement using `performance.now()`, preventing background throttling drift.
+- **Zero Dependencies**: Standalone HTML, CSS, and JavaScript.
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+---
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## 🚀 How to Deploy on GitHub Pages
 
-</div>
+1. Push this repository to GitHub.
+2. In your GitHub repository, navigate to **Settings** > **Pages** (in the left sidebar).
+3. Under **Build and deployment** > **Source**, choose **Deploy from a branch**.
+4. Under **Branch**, select `main` (or `master`) and folder `/(root)` (or `/docs`).
+5. Click **Save**.
+6. Your static website will be live in 1–2 minutes at: `https://<your-username>.github.io/<repo-name>/`!

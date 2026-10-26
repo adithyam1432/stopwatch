@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>Invisible Stopwatch</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+    html,body{width:100%;height:100%;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden;touch-action:manipulation}
+    #root{width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#000;padding:24px;position:relative}
+    .panel{width:100%;height:100%;display:none;flex-direction:column;justify-content:space-between;align-items:center;padding:32px 16px;position:absolute;top:0;left:0;right:0;bottom:0}
+    .panel.on{display:flex}
+    #p0{justify-content:center;align-items:center}
+    .btn-c{width:160px;height:160px;border-radius:50%;border:none;outline:none;cursor:pointer;display:flex;justify-content:center;align-items:center;font-weight:900;letter-spacing:2px;text-transform:uppercase;transition:transform .12s,box-shadow .12s;position:relative}
+    .btn-c:hover{transform:scale(1.04)}
+    .btn-c:active{transform:scale(.96)}
+    .btn-c:focus-visible{box-shadow:0 0 0 4px rgba(255,255,255,.4)}
+    .btn-a{background:#ff2a55;color:#fff;font-size:24px;box-shadow:0 8px 32px rgba(255,42,85,.4)}
+    .btn-b{background:#ff453a;color:#fff;font-size:24px;box-shadow:0 8px 32px rgba(255,69,58,.4)}
+    .btn-r{background:#ff2a55;color:#fff;font-size:18px;letter-spacing:1.5px;box-shadow:0 8px 32px rgba(255,42,85,.4)}
+    .c-act{flex:1;display:flex;justify-content:center;align-items:center;max-width:680px;width:100%;padding:20px;text-align:center}
+    .t-act{font-size:clamp(28px,6vw,44px);font-weight:900;line-height:1.35;color:#fff;word-break:break-word}
+    .c-btn{width:100%;display:flex;justify-content:center;align-items:center;padding-bottom:24px}
+    .c-res{flex:1;display:flex;justify-content:center;align-items:center;width:100%;text-align:center}
+    .t-res{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:clamp(48px,14vw,88px);font-weight:900;color:#fff;letter-spacing:-1px}
+    .spc{height:32px}
+  </style>
+</head>
+<body>
+  <main id="root">
+    <section id="p0" class="panel on">
+      <button id="b0" class="btn-c btn-a">START</button>
+    </section>
+    <section id="p1" class="panel">
+      <div class="spc"></div>
+      <div class="c-act"><h1 id="ta" class="t-act"></h1></div>
+      <div class="c-btn"><button id="b1" class="btn-c btn-b">STOP</button></div>
+    </section>
+    <section id="p2" class="panel">
+      <div class="spc"></div>
+      <div class="c-res"><h1 id="tr" class="t-res">00:00:00</h1></div>
+      <div class="c-btn"><button id="b2" class="btn-c btn-r">TRY AGAIN</button></div>
+    </section>
+  </main>
+  <script>
+    (function(){
+      var _0x1a=["TGV0J3MgRGFuY2UgTGlrZSBOb2JvZHkncyBXYXRjaGluZyDwn5KD","U2hvdyBZb3VyIEJlc3QgUm9ib3QgRGFuY2Ug8J+klg==","RG8gWW91ciBGdW5uaWVzdCBEYW5jZSBNb3Zl","RGFuY2UgTGlrZSBhIFZpZGVvIEdhbWUgQ2hhcmFjdGVy","RG8gYSAxMC1TZWNvbmQgQm9sbHl3b29kIERhbmNl","RGFuY2UgTGlrZSBZb3UncmUgaW4gYSBNdXNpYyBWaWRlbw==","SW52ZW50IFlvdXIgT3duIERhbmNlIE1vdmU=","RG8gYSBGdW5ueSBTbG93LU1vdGlvbiBEYW5jZQ==","RGFuY2UgTGlrZSBhIFJvYm90IFdpdGggTG93IEJhdHRlcnk=","RG8gWW91ciBCZXN0IFZpY3RvcnkgRGFuY2U=","TGV0J3MgU2luZyBZb3VyIEZhdm9yaXRlIFNvbmcg8J+OpA==","U2luZyBhIFNvbmcgTGlrZSBhbiBPcGVyYSBTaW5nZXI=","U2luZyBMaWtlIGEgUm9ib3Q=","U2luZyBZb3VyIEZhdm9yaXRlIFNvbmcgaW4gYSBGdW5ueSBWb2ljZQ==","U2luZyBhIFNvbmcgV2l0aG91dCBNdXNpYw==","U2luZyBMaWtlIGEgUG9wIFN0YXIgb24gU3RhZ2U=","U2luZyB0aGUgQ2hvcnVzIG9mIFlvdXIgRmF2b3JpdGUgU29uZw==","U2luZyBMaWtlIGEgQ2FydG9vbiBDaGFyYWN0ZXI=","UGVyZm9ybSBhIDEwLVNlY29uZCBDb25jZXJ0","U2luZyBhIFNvbmcgV2hpbGUgRG9pbmcgYSBHZW50bGUgRGFuY2U=","RG8gMTAgSnVtcGluZyBKYWNrcw==","RG8gNeKAkzEwIFNxdWF0cw==","UnVuIGluIFBsYWNlIGZvciAxNSBTZWNvbmRz","RG8gMTAgSGlnaCBLbmVlcw==","SG9sZCBhIFBsYW5rIGZvciAxMCBTZWNvbmRz","RG8gNSBXYWxsIFB1c2gtVXBz","U3RyZXRjaCBCb3RoIEFybXMgQWJvdmUgWW91ciBIZWFk","RG8gMTAgQ2FsZiBSYWlzZXM=","TWFyY2ggTGlrZSBhIFNvbGRpZXIgZm9yIDE1IFNlY29uZHM=","RG8gYSBGdW5ueSBWaWN0b3J5IFBvc2U=","VG91Y2ggWW91ciBUb2VzIEdlbnRseQ==","RG8gNSBTaWRlIFN0ZXBzIGluIEVhY2ggRGlyZWN0aW9u","UGVyZm9ybSAxMCBTaG91bGRlciBSb2xscw==","RG8gYSBRdWljayBGdWxsLUJvZHkgU3RyZXRjaA==","QmFsYW5jZSBvbiBPbmUgTGVnIGZvciAxMCBTZWNvbmRz","TW92ZSBMaWtlIGEgUm9ib3QgSW5zdGFsbGluZyBhbiBVcGRhdGUg8J+klg==","QWN0IExpa2UgYSBDb21wdXRlciBUaGF0IElzIEZyb3plbg==","UHJldGVuZCBZb3UncmUgYSBXaS1GaSBSb3V0ZXIgU2VhcmNoaW5nIGZvciBTaWduYWw=","RGFuY2UgTGlrZSBhIExhcHRvcCBGYW4gU3Bpbm5pbmcgYXQgRnVsbCBTcGVlZA==", "QWN0IExpa2UgYSBQaG9uZSBWaWJyYXRpbmcgV2l0aCBOb3RpZmljYXRpb25z", "UHJldGVuZCBZb3UncmUgYSBSb2JvdCBSdW5uaW5nIE91dCBvZiBCYXR0ZXJ5", "UGVyZm9ybSBhIEZ1bm55IFNvZnR3YXJlIFVwZGF0ZSBEYW5jZQ==", "TW92ZSBMaWtlIGEgVmlkZW8gR2FtZSBDaGFyYWN0ZXIgR2xpdGNoaW5n", "QWN0IExpa2UgYSBQcmludGVyIFRyeWluZyB0byBQcmludCBXaXRoIE5vIFBhcGVy", "RG8gYSBIYWNrZXIgRGFuY2UgV2hpbGUgVHlwaW5nIG9uIGFuIEltYWdpbmFyeSBLZXlib2FyZA==", "UHJldGVuZCBZb3UncmUgYSBMb2FkaW5nIFNjcmVlbiBTdHVjayBhdCA5OSU=", "UGVyZm9ybSBhIFJvYm90IEJvb3QtVXAgU2VxdWVuY2UgVXNpbmcgQm9keSBNb3ZlbWVudHM=", "QWN0IExpa2UgYW4gQUkgUm9ib3QgTGVhcm5pbmcgdG8gV2Fsaw==", "UHJldGVuZCBZb3UncmUgYSBLZXlib2FyZCBXaXRoIEV2ZXJ5IEtleSBTdHVjaw==", "RG8gYSBGdW5ueSBEYW5jZSBXaGVuIHRoZSBXaS1GaSBDb21lcyBCYWNr", "QWN0IExpa2UgYSBTbWFydHBob25lIEFsYXJtIFRoYXQgV29uJ3QgU3RvcCBSaW5naW5n", "UHJldGVuZCBZb3UncmUgYSBDb21wdXRlciBGYW4gT3ZlcmhlYXRpbmc=", "UGVyZm9ybSBhIFNsb3ctTW90aW9uIFJvYm90IFNodXRkb3du", "QWN0IExpa2UgYSBDaGFyYWN0ZXIgTGFnZ2luZyBpbiBhbiBPbmxpbmUgR2FtZQ==", "Q2VsZWJyYXRlIExpa2UgYSBQcm9ncmFtbWVyIFdob3NlIENvZGUgRmluYWxseSBXb3Jrcw==", "V2FsayBMaWtlIGEgU3VwZXJoZXJvIEVudGVyaW5nIGEgTW92aWU=", "UHJldGVuZCBZb3UncmUgV2Fsa2luZyBvbiB0aGUgTW9vbg==", "QWN0IExpa2UgYSBQZW5ndWluIFdhbGtpbmc=", "RG8gWW91ciBGdW5uaWVzdCBNb2RlbCBXYWxr", "UHJldGVuZCBZb3UncmUgYSBab21iaWUgaW4gYSBWaWRlbyBHYW1l", "QWN0IExpa2UgYSBTZWNyZXQgQWdlbnQgQXZvaWRpbmcgTGFzZXJz", "V2FsayBMaWtlIGEgR2lhbnQgUm9ib3Q=", "UGVyZm9ybSBhIERyYW1hdGljIE1vdmllIEhlcm8gRW50cnk=", "QWN0IExpa2UgWW91J3JlIFdpbm5pbmcgYW4gT2x5bXBpYyBHb2xkIE1lZGFs", "UHJldGVuZCBZb3UncmUgTW92aW5nIGluIFNsb3cgTW90aW9u", "RG8gYSBGdW5ueSBNYXJjaCBBcm91bmQgWW91ciBTcG90", "QWN0IExpa2UgYSBULVJleCBUcnlpbmcgdG8gRGFuY2U=", "UGVyZm9ybSBhIDEwLVNlY29uZCBTaWxlbnQgQ29tZWR5IFNjZW5l", "UHJldGVuZCBZb3UncmUgYSBTdXBlcmhlcm8gVGFraW5nIE9mZg==", "RG8gWW91ciBCZXN0IENhcnRvb24gQ2hhcmFjdGVyIE1vdmVtZW50"];
+      function _d(b){try{return decodeURIComponent(escape(atob(b)))}catch(e){return atob(b)}}
+      var _t=false,_s=0,_li=-1,_wl=null;
+      var _p0=document.getElementById("p0"),_p1=document.getElementById("p1"),_p2=document.getElementById("p2");
+      var _ta=document.getElementById("ta"),_tr=document.getElementById("tr");
+      var _b0=document.getElementById("b0"),_b1=document.getElementById("b1"),_b2=document.getElementById("b2");
+      function _sw(p){_p0.className="panel";_p1.className="panel";_p2.className="panel";p.className="panel on"}
+      function _rnd(){var i;do{i=Math.floor(Math.random()*_0x1a.length)}while(i===_li&&_0x1a.length>1);_li=i;return _d(_0x1a[i])}
+      function _fmt(m){var ms=Math.max(0,m),s=Math.round(ms/1000),h=Math.floor(s/3600),mn=Math.floor((s%3600)/60),sec=s%60;var p=function(v){return String(v).padStart(2,"0")};return p(h)+":"+p(mn)+":"+p(sec)}
+      _b0.addEventListener("click",function(){if(_t)return;_t=true;_ta.textContent=_rnd();_s=performance.now();if("wakeLock"in navigator){navigator.wakeLock.request("screen").then(function(w){_wl=w}).catch(function(){})}_sw(_p1)});
+      _b1.addEventListener("click",function(){if(!_t)return;_t=false;var e=performance.now()-_s;if(_wl){_wl.release().catch(function(){});_wl=null}_tr.textContent=_fmt(e);_sw(_p2)});
+      _b2.addEventListener("click",function(){_t=false;_sw(_p0)});
+      window.addEventListener("keydown",function(e){if(e.code==="Space"||e.code==="Enter"){if(_p0.classList.contains("on"))_b0.click();else if(_p1.classList.contains("on"))_b1.click();else if(_p2.classList.contains("on"))_b2.click()}});
+    })();
+  </script>
+</body>
+</html>

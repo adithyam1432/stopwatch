@@ -1,0 +1,27 @@
+# Ignore all files by default so only static website files are tracked in Git
+/*
+
+# Allow static website files
+!/docs/
+!/docs/**
+!/index.html
+!/README.md
+!/.gitignore
+
+# Explicitly exclude Android and build files
+/app
+/gradle
+/build
+/.gradle
+/.kotlin
+/.aistudio
+/.build-outputs
+/build.gradle.kts
+/settings.gradle.kts
+/gradle.properties
+/debug.keystore*
+/metadata.json
+/.env*
+/public
+*.iml
+.DS_Store
